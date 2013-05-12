@@ -1,0 +1,28 @@
+(FIXED) Cgroup can't limit swap (by default), but can be changed in
+linux-headers-3.8.0-16/init/Kconfig, not sure how.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=918951
+
+Kernel config should be (ignore):
+CONFIG_CGROUP_MEM_RES_CTLR=y
+CONFIG_CGROUP_MEM_RES_CTLR_SWAP=y
+
+Okay it is working now had to change (for ubuntu):
+1.) Not necessary /boot/config-3.8.0-16-generic --> changed
+CONFIG_MEMCG_SWAP_ENABLED=y
+2.) Added new kernel boot parameter to grub.
+In file /etc/default/grub changed this line from:
+GRUB_CMDLINE_LINUX_DEFAULT="quiet"
+to:
+GRUB_CMDLINE_LINUX_DEFAULT="quiet swapaccount=1"
+And then ran: sudo update-grub.
+3.) Reboot the system.
+
+
+Long term:
+1.) Make container with limited disk space
+2.) Create password for root
+3.) [SOLVED] Create another user which is
+    not root (and run processes with that user).
+
+
