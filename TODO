@@ -20,9 +20,10 @@ And then ran: sudo update-grub.
 
 
 Long term:
-1.) Make container with limited disk space
-2.) Create password for root
-3.) [SOLVED] Create another user which is
+1.) Change the results.txt permissions, so other users can read&write.
+2.) Make container with limited disk space
+3.) Create password for root in container, not sure what is current password.
+4.) [SOLVED] Create another user which is
     not root (and run processes with that user).
 
 
