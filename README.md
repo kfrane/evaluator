@@ -1,6 +1,9 @@
 evaluator
 =========
 
+More details can be found on this blog:
+http://sgros-students.blogspot.com/search/label/sandbox
+
 The idea is to create two command line tools. The first one, which is
 called evaluator is responsible for running another process in a safe and
 confined environment. It will run the untrusted program inside an lxc
