@@ -1,0 +1,34 @@
+Requirements:
+1.) >= Python 3.2
+2.) >= lxc 0.9.0 with python bindings enabled
+3.) Cgroups with memory controller enabled.
+    This can be checked with lxc-checkconfig,
+    the output should contain the line listed below.
+    Cgroup memory controller: enabled
+4.) When the memory controller is enabled, it should
+    also have swap accounting enabled.
+    his can be enabled by setting the swapaccount boot parameter to 1.
+    Instructions for Ubuntu:
+      1.) Add new kernel boot parameter to grub.
+          In file /etc/default/grub changed this line from:
+          GRUB_CMDLINE_LINUX_DEFAULT="quiet"
+          to:
+          GRUB_CMDLINE_LINUX_DEFAULT="quiet swapaccount=1"
+          And then run: sudo update-grub.
+      2.) Reboot the system.
+
+Installation:
+1.)
+  Run ./create_sandbox.sh
+  It just creates lxc container named 'sandbox' from modified busybox template
+  conbtained in this folder under name sandbox_template.
+2.)
+  Goto folder perf/ and run make.
+
+Now you are ready to try running something in evaluator.
+Goto evaluator/ folder and run:
+sudo ./evaluator -m 32000000 /bin/cat
+This will copy /bin/cat file to containers rootfs/tmp and run it with 32 MB
+memory limit.
+
+

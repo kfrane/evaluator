@@ -42,7 +42,7 @@ void parse_flags(int argc, char **argv) {
   exec_index = optind;
 }
 
-void setlimits() {
+void setlimits(void) {
   struct rlimit coredump_limits, thread_limits, mem_limits, cpu_limits;
   coredump_limits.rlim_cur = coredump_limits.rlim_max = 0;
   if (setrlimit(RLIMIT_CORE, &coredump_limits) != 0) {

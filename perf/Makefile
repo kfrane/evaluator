@@ -1,4 +1,4 @@
-CC = g++
+CC = gcc
 C_FLAGS = -Wall
 
 all: perf perf_tests
@@ -20,5 +20,5 @@ tests/forkbomb: tests/forkbomb.c
 tests/test_io: tests/test_io.c
 	$(CC) tests/test_io.c -otests/test_io $(C_FLAGS)
 
-clear:
+clean:
 	rm perf tests/core_dump_create tests/dofork tests/forkbomb tests/test_io
