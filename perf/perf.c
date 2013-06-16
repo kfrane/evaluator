@@ -4,6 +4,7 @@
 
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/resource.h>
 
 #define ERR_CODE 117
@@ -74,23 +75,56 @@ void setlimits(void) {
   getrlimit(RLIMIT_NPROC, &thread_limits);
 }
 
+double time_to_double(const struct timeval ru_utime) {
+  return (double)ru_utime.tv_sec  + (double)ru_utime.tv_usec / (double)1000000;
+}
+
 int main(int argc, char *argv[]) {
   int i;
   int argv_child_len;
-  int setuid_ret = setuid(2789);
-  if (setuid_ret < 0) {
-    err(setuid_ret, "Couldn't change user id\n");
-  }
   parse_flags(argc, argv);
-  setlimits();
+  
+  int fork_ret = fork();
+  if (fork_ret < 0) {
+    err(1, "Couldn't create child proces.\n");
+  } else if (fork_ret == 0) {
+    // child process
+    int setuid_ret = setuid(2789);
+    if (setuid_ret < 0) {
+      err(setuid_ret, "Couldn't change user id\n");
+    }
+    setlimits();
 
-  argv_child_len = argc-exec_index;
-  char *argv_child[argv_child_len+1];
-  for(i = 0; i < argv_child_len; i++) {
-    argv_child[i] = argv[exec_index+i];
+    argv_child_len = argc-exec_index;
+    char *argv_child[argv_child_len+1];
+    for(i = 0; i < argv_child_len; i++) {
+      argv_child[i] = argv[exec_index+i];
+    }
+    argv_child[argv_child_len] = NULL;
+    execvp(argv[exec_index], argv_child);
+    err(ERR_CODE, NULL);
+  } else {
+    int status = 0;
+    struct rusage child_usage;
+    wait4(fork_ret, &status, 0, &child_usage);
+    FILE *F_OUT = fopen("results.txt", "w");
+    if (F_OUT == NULL) {
+      err(ERR_CODE, NULL);
+    }
+    if (WIFEXITED(status)) {
+      fprintf(F_OUT, "%d\n", WEXITSTATUS(status));
+    } else if (WIFSIGNALED(status)) {
+      fprintf(F_OUT, "%d\n", -WTERMSIG(status));
+    } else {
+      err(ERR_CODE, NULL);
+    }
+    fprintf(
+        F_OUT,
+        "%lf\n%lf\n%ld\n", 
+        time_to_double(child_usage.ru_utime),
+        time_to_double(child_usage.ru_stime),
+        child_usage.ru_maxrss);
+    fclose(F_OUT);
   }
-  argv_child[argv_child_len] = NULL;
-  execvp(argv[exec_index], argv_child);
-  err(ERR_CODE, NULL);
   return 0;
 }

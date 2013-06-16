@@ -88,14 +88,14 @@ class Evaluator:
       self.container.stop()
       print ("self.container", self.container_name, "won't run")
       return
-    self.set_memory_limits(memory_limit)
+    self.set_memory_limits(str(int(memory_limit) + 1024 * 1024))
 
     thread_exited = threading.Event()
     # monitor will notify 1M before actual limit,
     # because it sometimes notifies too late
     monitor = MonitorMem(
       self.cgroup_path,
-      int(memory_limit) - 1024 * 1024,
+      int(memory_limit),
       thread_exited)
     monitor.start()
 

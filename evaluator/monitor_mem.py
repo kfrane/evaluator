@@ -17,7 +17,7 @@ class MonitorMem(threading.Thread):
     self.event_control = open(cgroup_path + 'cgroup.event_control', 'w')
     event_str = str(self.event_fd) + " " + str(self.memswp_fd) + " " + str(memory_limit) + '\n'
     self.event_control.write(event_str)
-    self.event_control.flush()
+    self.event_control.close()
 
   def run(self):
     self.read_num = os.read(self.event_fd, 8)
